@@ -1,12 +1,54 @@
 // DrawingCanvas.js
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
+import { io } from 'socket.io-client'
 
-const DrawingCanvas = ({ onDraw, canvasRef }) => {
+const socket = io('http://localhost:3000', { transports: ['websocket'] })
+const boardId = '657d8746e672c0ea3c786b98' // This should be dynamic in a real app
+
+const DrawingCanvas = () => {
+  const canvasRef = useRef(null) // Initialize the ref
+
+  // Define onDraw using useCallback
+  const onDraw = useCallback((data) => {
+    // Emit drawing data to the server
+    socket.emit('draw', data)
+  }, [])
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server')
+      socket.emit('joinBoard', { boardId: boardId })
+    })
+
+    socket.on('drawing', (data) => {
+      console.log('New drawing received', data)
+      const canvas = canvasRef.current
+      if (canvas && data.strokes) {
+        const context = canvas.getContext('2d')
+        context.beginPath()
+        context.strokeStyle = data.strokes[0].color
+        context.lineWidth = data.strokes[0].width
+        context.moveTo(
+          data.strokes[0].coordinates[0].x,
+          data.strokes[0].coordinates[0].y
+        )
+        data.strokes[0].coordinates.forEach((coord) => {
+          context.lineTo(coord.x, coord.y)
+        })
+        context.stroke()
+      }
+    })
+
+    return () => {
+      socket.off('connect')
+      socket.off('drawing')
+    }
+  }, [])
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
     context.strokeStyle = '#000000' // Default black color
-    context.lineWidth = 2 // Default line width
+    context.lineWidth = 2
 
     let drawing = false
 
