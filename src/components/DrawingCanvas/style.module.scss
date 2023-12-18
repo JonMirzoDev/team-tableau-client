@@ -1,0 +1,41 @@
+/* style.module.scss */
+.canvasContainer {
+  width: 100vw;
+  height: calc(100vh); /* Adjust based on your header/tool panel height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; /* Light grey background */
+}
+
+.canvas {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+  background: white; /* Or a background that resembles paper */
+}
+
+.toolPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 10;
+}
+
+.toolButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  &:hover {
+    background-color: #f2f2f2;
+  }
+}
+
+/* Other styles for color picker, undo/redo buttons, etc. */

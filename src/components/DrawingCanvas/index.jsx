@@ -1,23 +1,56 @@
 // DrawingCanvas.js
 import React, { useCallback, useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'
+import styles from './style.module.scss'
+import { useGetBoardDrawings } from '../../services/board.service'
 
 const socket = io('http://localhost:3000', { transports: ['websocket'] })
-const boardId = '657d8746e672c0ea3c786b98' // This should be dynamic in a real app
 
 const DrawingCanvas = () => {
-  const canvasRef = useRef(null) // Initialize the ref
+  const canvasRef = useRef(null)
+  const { id } = useParams()
+  const { data } = useGetBoardDrawings({ id })
+  const boardData = data?.data
 
-  // Define onDraw using useCallback
   const onDraw = useCallback((data) => {
-    // Emit drawing data to the server
     socket.emit('draw', data)
   }, [])
 
   useEffect(() => {
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')
+
+    const drawStrokes = (strokes) => {
+      strokes.forEach((stroke) => {
+        context.beginPath()
+        context.strokeStyle = stroke.color
+        context.lineWidth = stroke.width
+        const coordinates = stroke.coordinates
+        if (coordinates.length > 0) {
+          context.moveTo(coordinates[0].x, coordinates[0].y)
+          coordinates.forEach(({ x, y }) => {
+            context.lineTo(x, y)
+          })
+          context.stroke()
+        }
+      })
+    }
+
+    if (boardData && canvas) {
+      boardData.forEach((drawing) => {
+        if (drawing.strokes && drawing.strokes.length > 0) {
+          drawStrokes(drawing.strokes)
+        }
+      })
+    }
+
+  }, [boardData])
+
+  useEffect(() => {
     socket.on('connect', () => {
       console.log('Connected to WebSocket server')
-      socket.emit('joinBoard', { boardId: boardId })
+      socket.emit('joinBoard', { boardId: id })
     })
 
     socket.on('drawing', (data) => {
@@ -43,11 +76,12 @@ const DrawingCanvas = () => {
       socket.off('connect')
       socket.off('drawing')
     }
-  }, [])
+  }, [id])
+
   useEffect(() => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
-    context.strokeStyle = '#000000' // Default black color
+    context.strokeStyle = '#000000'
     context.lineWidth = 2
 
     let drawing = false
@@ -60,7 +94,7 @@ const DrawingCanvas = () => {
       currentStroke = []
       context.beginPath()
       context.moveTo(offsetX, offsetY)
-      currentStroke.push({ x: offsetX, y: offsetY }) // Start the stroke
+      currentStroke.push({ x: offsetX, y: offsetY })
     }
 
     const draw = (e) => {
@@ -68,16 +102,15 @@ const DrawingCanvas = () => {
       const { offsetX, offsetY } = e
       context.lineTo(offsetX, offsetY)
       context.stroke()
-      currentStroke.push({ x: offsetX, y: offsetY }) // Add point to the current stroke
+      currentStroke.push({ x: offsetX, y: offsetY })
     }
 
     const stopDrawing = () => {
       if (!drawing) return
       drawing = false
       context.closePath()
-      // Emit the entire stroke to the server
       onDraw({
-        boardId: '657d8746e672c0ea3c786b98', // Replace with actual board ID
+        board: id,
         strokes: [
           {
             color: context.strokeStyle,
@@ -86,29 +119,29 @@ const DrawingCanvas = () => {
           }
         ]
       })
-      currentStroke = [] // Clear the current stroke
+      currentStroke = []
     }
 
-    // Add event listeners for 'mousedown', 'mousemove', and 'mouseup'
     canvas.addEventListener('mousedown', (e) => startDrawing(e))
     canvas.addEventListener('mousemove', (e) => draw(e))
     canvas.addEventListener('mouseup', (e) => stopDrawing(e))
 
-    // Clean up event listeners on component unmount
     return () => {
       canvas.removeEventListener('mousedown', startDrawing)
       canvas.removeEventListener('mousemove', draw)
       canvas.removeEventListener('mouseup', stopDrawing)
     }
-  }, [onDraw]) // Include onDraw in the dependency array
+  }, [id, onDraw])
 
   return (
-    <canvas
-      ref={canvasRef}
-      width='800'
-      height='600'
-      style={{ border: '1px solid black', cursor: 'crosshair' }}
-    />
+    <div className={styles.canvasContainer}>
+      <canvas
+        ref={canvasRef}
+        className={styles.canvas}
+        width={800}
+        height={800}
+      />
+    </div>
   )
 }
 
