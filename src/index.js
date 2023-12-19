@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />
   },
-  { path: '/boards/:id', element: <DrawingCanvas /> },
+  { path: '/boards/:id/:name', element: <DrawingCanvas /> },
   {
     path: '*',
     element: <Navigate to='/' />

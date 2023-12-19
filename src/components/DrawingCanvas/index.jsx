@@ -9,8 +9,9 @@ const socket = io('http://localhost:3000', { transports: ['websocket'] })
 
 const DrawingCanvas = () => {
   const canvasRef = useRef(null)
-  const { id } = useParams()
-  const { data } = useGetBoardDrawings({ id })
+  const { id, name } = useParams()
+  console.log('name', name)
+  const { data, isLoading } = useGetBoardDrawings({ id })
   const boardData = data?.data
 
   const onDraw = useCallback((data) => {
@@ -44,7 +45,6 @@ const DrawingCanvas = () => {
         }
       })
     }
-
   }, [boardData])
 
   useEffect(() => {
@@ -135,6 +135,12 @@ const DrawingCanvas = () => {
 
   return (
     <div className={styles.canvasContainer}>
+      <div>
+        <h2>User: {name}</h2>
+      </div>
+      <div>
+        <h4>{isLoading && 'Loading previous drawings...'}</h4>
+      </div>
       <canvas
         ref={canvasRef}
         className={styles.canvas}

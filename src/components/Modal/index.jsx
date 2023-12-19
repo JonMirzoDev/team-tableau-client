@@ -21,8 +21,9 @@ const Modal = ({ isOpen, onClose, onConfirm, selectedBoardId }) => {
       { id: selectedBoardId, name: data },
       {
         onSuccess: (res) => {
+          console.log('res: ', res)
           toast.success('Successfully joined')
-          navigate(`/boards/${selectedBoardId}`)
+          navigate(`/boards/${selectedBoardId}/${res?.data?.userNickname}`)
           reset()
           onConfirm()
         },
