@@ -1,13 +1,14 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 
+const baseURL = process.env.REACT_APP_BASE_URL
+
 const boardService = {
-  getBoards: async () => axios.get('http://localhost:3000/boards'),
-  createBoard: async (data) => axios.post('http://localhost:3000/boards', data),
+  getBoards: async () => axios.get(`${baseURL}/boards`),
+  createBoard: async (data) => axios.post(`${baseURL}/boards`, data),
   joinBoard: async (data) =>
-    axios.post(`http://localhost:3000/boards/${data.id}/join`, data.name),
-  getBoardDrawings: async (id) =>
-    axios.get(`http://localhost:3000/boards/${id}/drawings`)
+    axios.post(`${baseURL}/boards/${data.id}/join`, data.name),
+  getBoardDrawings: async (id) => axios.get(`${baseURL}/boards/${id}/drawings`)
 }
 
 export const useGetBoards = (querySettings) => {
