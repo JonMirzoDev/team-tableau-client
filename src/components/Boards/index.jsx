@@ -6,6 +6,7 @@ import styles from './style.module.scss'
 import Modal from '../Modal'
 
 const Boards = ({ boards = [], isBoardsLoading = false }) => {
+  ///tettt
   const {
     register,
     handleSubmit,
