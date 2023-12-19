@@ -4,12 +4,11 @@ import { io } from 'socket.io-client'
 import styles from './style.module.scss'
 import { useGetBoardDrawings } from '../../services/board.service'
 
-const socket = io('http://localhost:3000', { transports: ['websocket'] })
-
+const baseURL = process.env.REACT_APP_BASE_URL
+const socket = io(`${baseURL}`, { transports: ['websocket'] })
 const DrawingCanvas = () => {
   const canvasRef = useRef(null)
   const { id, name } = useParams()
-  console.log('name', name)
   const { data, isLoading } = useGetBoardDrawings({ id })
   const boardData = data?.data
 
