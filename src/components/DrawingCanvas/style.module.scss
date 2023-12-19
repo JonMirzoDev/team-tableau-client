@@ -1,0 +1,39 @@
+.canvasContainer {
+  width: 100vw;
+  height: calc(100vh);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f0f0f0;
+}
+
+.canvas {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+  background: white;
+}
+
+.toolPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 10;
+}
+
+.toolButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  &:hover {
+    background-color: #f2f2f2;
+  }
+}
