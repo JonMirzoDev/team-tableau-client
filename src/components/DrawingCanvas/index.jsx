@@ -1,4 +1,3 @@
-// DrawingCanvas.js
 import React, { useCallback, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { io } from 'socket.io-client'

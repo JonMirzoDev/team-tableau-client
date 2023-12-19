@@ -1,4 +1,3 @@
-// Modal.js
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import styles from './style.module.scss'

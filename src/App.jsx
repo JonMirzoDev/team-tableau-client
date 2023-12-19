@@ -1,4 +1,3 @@
-// App.js
 import React from 'react'
 import { useGetBoards } from './services/board.service'
 import Boards from './components/Boards'
